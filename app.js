@@ -1,12 +1,11 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-const { port } = require('./config');
-
-const { initVectorDb } = require('./models/vectors');
-const { handleSlackEvent } = require('./controllers/slack');
-const { verifySlackRequest } = require('./middlewares/slack');
+// app.js
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const path = require('path');
+const logger = require('morgan');
+const errorHandler = require('./middlewares/errors');
+const slackRoutes = require('./routes/slack');
+const healthRoutes = require('./routes/health'); // Import health check route
 
 const app = express();
 
@@ -16,15 +15,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-(async () => {
-  await initVectorDb();
-})();
+// Define routes
+app.use('/slack', slackRoutes);
+app.use('/health', healthRoutes); // Register health check route
 
-app.post('/slack/events', verifySlackRequest, handleSlackEvent);
-
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
-
+// Global error handler
+app.use(errorHandler);
 
 module.exports = app;

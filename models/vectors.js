@@ -7,7 +7,7 @@ const client = new PineconeClient();
 async function initVectorDb() {
   await client.init({
     apiKey: vectorDbApiKey,
-    environment: 'us-west1-gcp', // Adjust based on your setup
+    environment: 'https://demo-qa8wyiw.svc.aped-4627-b74a.pinecone.io', // Adjust based on your setup
   });
 }
 
